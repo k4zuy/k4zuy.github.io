@@ -10,7 +10,7 @@ body {
 
 .image-container img {
     position: absolute;
-    width: 100px;    /* You can adjust the width as needed */
+    width: 100px;
     height: auto;
-    transition: transform 0.5s ease;
+    transition: transform 5s linear;  /* Updated this line */
 }
