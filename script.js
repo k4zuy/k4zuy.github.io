@@ -3,26 +3,24 @@ $(document).ready(function() {
     $.getJSON('images.json', function(data) {
         data.images.forEach(function(image) {
             var imgElement = $('<img>').attr('src', 'images/' + image).attr('alt', image);
-            imgElement.data('direction', randomDirection());
+            imgElement.data('velocity', getRandomVelocity());
             $('.image-container').append(imgElement);
         });
 
-        setInterval(updateDirections, 10000);  // Change direction every 10 seconds
-        requestAnimationFrame(animateImages);
+        setInterval(updateVelocities, 10000); // Change velocity every 10 seconds
+        animateImages();
     });
 
-    function randomDirection() {
-        var angle = Math.random() * Math.PI * 2;  // Random angle
-        var speed = Math.random() * 3 + 1;  // Random speed between 1 and 4
+    function getRandomVelocity() {
         return {
-            x: Math.cos(angle) * speed,
-            y: Math.sin(angle) * speed
+            dx: (Math.random() - 0.5) * 4,
+            dy: (Math.random() - 0.5) * 4
         };
     }
 
-    function updateDirections() {
+    function updateVelocities() {
         $(".image-container img").each(function() {
-            $(this).data('direction', randomDirection());
+            $(this).data('velocity', getRandomVelocity());
         });
     }
 
@@ -30,22 +28,27 @@ $(document).ready(function() {
         $(".image-container img").each(function() {
             var $img = $(this);
             var pos = $img.position();
-            var direction = $img.data('direction');
+            var velocity = $img.data('velocity');
+            
+            var newLeft = pos.left + velocity.dx;
+            var newTop = pos.top + velocity.dy;
 
-            var newLeft = pos.left + direction.x;
-            var newTop = pos.top + direction.y;
-
-            // Keep images within the viewport:
+            // Keep images within the viewport and reverse direction if it hits an edge:
             if (newLeft < 0 || newLeft > $(window).width() - $img.width()) {
-                direction.x = -direction.x;
+                velocity.dx = -velocity.dx;
+                newLeft = pos.left + velocity.dx;
             }
             if (newTop < 0 || newTop > $(window).height() - $img.height()) {
-                direction.y = -direction.y;
+                velocity.dy = -velocity.dy;
+                newTop = pos.top + velocity.dy;
             }
 
-            $img.css('transform', `translate(${newLeft}px, ${newTop}px)`);
+            $img.css({
+                left: newLeft + 'px',
+                top: newTop + 'px'
+            });
         });
 
-        requestAnimationFrame(animateImages);  // Loop the animation
+        requestAnimationFrame(animateImages);  // Keep the animation running
     }
 });
