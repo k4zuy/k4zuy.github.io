@@ -4,6 +4,17 @@ $(document).ready(function() {
     $.getJSON('images.json', function(data) {
         data.images.forEach(function(image) {
             var imgElement = $('<img>').attr('src', 'images/' + image).attr('alt', image);
+            
+            // Set the image's random starting position
+            var randomLeft = Math.random() * ($(window).width() - 100);  // Assuming 100px as average image width, adjust if needed
+            var randomTop = Math.random() * ($(window).height() - 100); // Assuming 100px as average image height, adjust if needed
+            
+            imgElement.css({
+                left: randomLeft + 'px',
+                top: randomTop + 'px',
+                position: 'absolute'  // Ensure the image can be positioned anywhere in the container
+            });
+
             imgElement.data('velocity', getRandomVelocity());
             $('.image-container').append(imgElement);
         });
