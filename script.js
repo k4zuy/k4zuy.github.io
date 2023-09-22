@@ -31,5 +31,5 @@ $(document).ready(function() {
         $(".image-container img").each(function() {
             moveImage($(this));
         });
-    }, 2000);  
+    }, 1000);  
 });
