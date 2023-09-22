@@ -77,8 +77,8 @@ $(document).ready(function() {
         });
 
         imgElement.data('velocity', {
-            dx: (Math.random() - 0.5) * 0.5,  // Even slower movement
-            dy: (Math.random() - 0.5) * 0.5,
+            dx: (Math.random() - 0.5) * 1,  // Adjusted movement speed
+            dy: (Math.random() - 0.5) * 1,
             dz: (Math.random() - 0.5) * 0.02
         });
         
@@ -88,8 +88,8 @@ $(document).ready(function() {
     function updateVelocities() {
         $(".image-container img").each(function() {
             var velocity = $(this).data('velocity');
-            velocity.dx = (Math.random() - 0.5) * 0.5;  // Even slower movement
-            velocity.dy = (Math.random() - 0.5) * 0.5;
+            velocity.dx = (Math.random() - 0.5) * 1;  // Adjusted movement speed
+            velocity.dy = (Math.random() - 0.5) * 1;
         });
     }
 
@@ -110,7 +110,7 @@ $(document).ready(function() {
             if (newTop > $(window).height() - $img.height()) newTop = $(window).height() - $img.height();
 
             var newZ = velocity.dz + ($img.data('z') || 1);
-            if (newZ < 0.5 || newZ > 1.5) {
+            if (newZ < 0.7 || newZ > 1.3) {
                 velocity.dz = -velocity.dz;
                 newZ += velocity.dz;
             }
