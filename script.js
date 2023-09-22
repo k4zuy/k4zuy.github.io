@@ -1,29 +1,66 @@
+const TOTAL_IMAGES_TO_DISPLAY = 40;
+const IMAGE_CHANGE_INTERVAL = 30000; // Change a few images every 30 seconds
+
 $(document).ready(function() {
 
     // Fetching the images from images.json and appending them to the .image-container
     $.getJSON('images.json', function(data) {
-        data.images.forEach(function(image) {
-            var imgElement = $('<img>').attr('src', 'images/' + image).attr('alt', image);
-            
-            // Set the image's random starting position
-            var randomLeft = Math.random() * ($(window).width() - 100);  // Assuming 100px as average image width, adjust if needed
-            var randomTop = Math.random() * ($(window).height() - 100); // Assuming 100px as average image height, adjust if needed
-            
-            imgElement.css({
-                left: randomLeft + 'px',
-                top: randomTop + 'px',
-                position: 'absolute'  // Ensure the image can be positioned anywhere in the container
-            });
+        let allImages = data.images;
+        let selectedImages = getRandomElements(allImages, TOTAL_IMAGES_TO_DISPLAY);
 
-            imgElement.data('velocity', getRandomVelocity());
-            $('.image-container').append(imgElement);
-        });
+        selectedImages.forEach(appendImage);
+
+        setInterval(() => {
+            changeRandomImages(allImages);
+        }, IMAGE_CHANGE_INTERVAL);
 
         setInterval(updateVelocities, 10000); // Change velocity every 10 seconds
         animateImages();
     });
 
-    // Function to generate random velocity for the images
+    function getRandomElements(arr, count) {
+        let shuffled = arr.slice(0);
+        let i = arr.length;
+        let temp;
+        let index;
+        while (i--) {
+            index = Math.floor(i * Math.random());
+            temp = shuffled[i];
+            shuffled[i] = shuffled[index];
+            shuffled[index] = temp;
+        }
+        return shuffled.slice(0, count);
+    }
+
+    function appendImage(image) {
+        var imgElement = $('<img>').attr('src', 'images/' + image).attr('alt', image);
+        var randomLeft = Math.random() * ($(window).width() - 100); 
+        var randomTop = Math.random() * ($(window).height() - 100);
+        
+        imgElement.css({
+            left: randomLeft + 'px',
+            top: randomTop + 'px',
+            position: 'absolute'  
+        });
+
+        imgElement.data('velocity', getRandomVelocity());
+        $('.image-container').append(imgElement);
+    }
+
+    function changeRandomImages(allImages) {
+        let countToReplace = 5; // Number of images to replace
+        let currentImages = $('.image-container img').map((_, img) => $(img).attr('alt')).get();
+        let newImages = allImages.filter(img => !currentImages.includes(img));
+        
+        for (let i = 0; i < countToReplace && $('.image-container img').length; i++) {
+            let randomIndex = Math.floor(Math.random() * $('.image-container img').length);
+            $($('.image-container img')[randomIndex]).remove();
+        }
+
+        let imagesToAdd = getRandomElements(newImages, countToReplace);
+        imagesToAdd.forEach(appendImage);
+    }
+
     function getRandomVelocity() {
         return {
             dx: (Math.random() - 0.5) * 4,
@@ -31,31 +68,26 @@ $(document).ready(function() {
         };
     }
 
-    // Function to update the velocities of the images
     function updateVelocities() {
         $(".image-container img").each(function() {
             $(this).data('velocity', getRandomVelocity());
         });
     }
 
-    // Function to pause an image's motion
     function pauseImage() {
         var $img = $(this);
         $img.data('paused', true);
     }
 
-    // Function to resume an image's motion
     function resumeImage() {
         var $img = $(this);
         $img.data('paused', false);
     }
 
-    // Function to animate the images on the screen
     function animateImages() {
         $(".image-container img").each(function() {
             var $img = $(this);
             
-            // If the image is paused, don't move it
             if ($img.data('paused')) return;
 
             var pos = $img.position();
@@ -64,7 +96,6 @@ $(document).ready(function() {
             var newLeft = pos.left + velocity.dx;
             var newTop = pos.top + velocity.dy;
 
-            // Keep images within the viewport and reverse direction if it hits an edge:
             if (newLeft < 0 || newLeft > $(window).width() - $img.width()) {
                 velocity.dx = -velocity.dx;
                 newLeft = pos.left + velocity.dx;
@@ -80,23 +111,20 @@ $(document).ready(function() {
             });
         });
 
-        requestAnimationFrame(animateImages);  // Keep the animation running
+        requestAnimationFrame(animateImages);
     }
 
-    // Event to open the modal when an image is clicked
     $(document).on('click', '.image-container img', function() {
         var src = $(this).attr('src');
         $('#modalImage').attr('src', src);
         $('#imageModal').show();
     });
 
-    // Function to close the modal
     $(document).on('click', '.modal-close', closeModal);
     function closeModal() {
         $('#imageModal').hide();
     }
 
-    // Binding the hover event to the pause and resume functions
     $(document).on('mouseover', '.image-container img', pauseImage);
     $(document).on('mouseout', '.image-container img', resumeImage);
 });
