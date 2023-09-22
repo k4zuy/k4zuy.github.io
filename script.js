@@ -27,10 +27,26 @@ $(document).ready(function() {
         });
     }
 
+    // Function to pause an image's motion
+    function pauseImage() {
+        var $img = $(this);
+        $img.data('paused', true);
+    }
+
+    // Function to resume an image's motion
+    function resumeImage() {
+        var $img = $(this);
+        $img.data('paused', false);
+    }
+
     // Function to animate the images on the screen
     function animateImages() {
         $(".image-container img").each(function() {
             var $img = $(this);
+            
+            // If the image is paused, don't move it
+            if ($img.data('paused')) return;
+
             var pos = $img.position();
             var velocity = $img.data('velocity');
             
@@ -68,4 +84,8 @@ $(document).ready(function() {
     function closeModal() {
         $('#imageModal').hide();
     }
+
+    // Binding the hover event to the pause and resume functions
+    $(document).on('mouseover', '.image-container img', pauseImage);
+    $(document).on('mouseout', '.image-container img', resumeImage);
 });
