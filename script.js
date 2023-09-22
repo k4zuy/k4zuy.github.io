@@ -35,20 +35,17 @@ $(document).ready(function() {
     }
 
     function changeRandomImages() {
-        // Here, let's replace 5 images. Adjust as needed.
-        for (let i = 0; i < 5; i++) {
-            if ($('.image-container img').length) {
-                let randomIndex = Math.floor(Math.random() * $('.image-container img').length);
-                let $randomImage = $($('.image-container img')[randomIndex]);
-                
-                // Remove the old image from the currentDisplayedImages array
-                let indexOfImage = currentDisplayedImages.indexOf($randomImage.attr('alt'));
-                if (indexOfImage > -1) {
-                    currentDisplayedImages.splice(indexOfImage, 1);
-                }
-                
-                $randomImage.remove();
+        let countToReplace = 5; // Number of images to replace
+        for (let i = 0; i < countToReplace && $('.image-container img').length; i++) {
+            let randomIndex = Math.floor(Math.random() * $('.image-container img').length);
+            let $randomImage = $($('.image-container img')[randomIndex]);
+            
+            let indexOfImage = currentDisplayedImages.indexOf($randomImage.attr('alt'));
+            if (indexOfImage > -1) {
+                currentDisplayedImages.splice(indexOfImage, 1);
             }
+            
+            $randomImage.remove();
         }
 
         addRandomImages();
@@ -71,9 +68,8 @@ $(document).ready(function() {
     function createImageElement(imageName) {
         var imgElement = $('<img>').attr('src', 'images/' + imageName).attr('alt', imageName);
         
-        // Set random starting position and velocity for each image
-        var randomLeft = Math.random() * ($(window).width() - 100);  
-        var randomTop = Math.random() * ($(window).height() - 100); 
+        var randomLeft = Math.random() * ($(window).width() - 150);  
+        var randomTop = Math.random() * ($(window).height() - 150); 
         imgElement.css({
             left: randomLeft + 'px',
             top: randomTop + 'px',
@@ -81,9 +77,9 @@ $(document).ready(function() {
         });
 
         imgElement.data('velocity', {
-            dx: (Math.random() - 0.5) * 1,  // Slower movement
-            dy: (Math.random() - 0.5) * 1,
-            dz: (Math.random() - 0.5) * 0.05
+            dx: (Math.random() - 0.5) * 0.5,  // Even slower movement
+            dy: (Math.random() - 0.5) * 0.5,
+            dz: (Math.random() - 0.5) * 0.02
         });
         
         return imgElement;
@@ -92,8 +88,8 @@ $(document).ready(function() {
     function updateVelocities() {
         $(".image-container img").each(function() {
             var velocity = $(this).data('velocity');
-            velocity.dx = (Math.random() - 0.5) * 1;  // Slower movement
-            velocity.dy = (Math.random() - 0.5) * 1;
+            velocity.dx = (Math.random() - 0.5) * 0.5;  // Even slower movement
+            velocity.dy = (Math.random() - 0.5) * 0.5;
         });
     }
 
@@ -106,17 +102,13 @@ $(document).ready(function() {
             var newLeft = pos.left + velocity.dx;
             var newTop = pos.top + velocity.dy;
             
-            // Keep images within the viewport and reverse direction if it hits an edge
-            if (newLeft < 0 || newLeft > $(window).width() - $img.width()) {
-                velocity.dx = -velocity.dx;
-                newLeft = pos.left + velocity.dx;
-            }
-            if (newTop < 0 || newTop > $(window).height() - $img.height()) {
-                velocity.dy = -velocity.dy;
-                newTop = pos.top + velocity.dy;
-            }
+            // Adjustments to keep images within the viewport
+            if (newLeft < 0) newLeft = 0;
+            if (newLeft > $(window).width() - $img.width()) newLeft = $(window).width() - $img.width();
+            
+            if (newTop < 0) newTop = 0;
+            if (newTop > $(window).height() - $img.height()) newTop = $(window).height() - $img.height();
 
-            // Implementing the 3D-like effect
             var newZ = velocity.dz + ($img.data('z') || 1);
             if (newZ < 0.5 || newZ > 1.5) {
                 velocity.dz = -velocity.dz;
@@ -133,6 +125,6 @@ $(document).ready(function() {
             });
         });
 
-        requestAnimationFrame(animateImages);  // Keep the animation running
+        requestAnimationFrame(animateImages);
     }
 });
