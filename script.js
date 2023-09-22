@@ -1,5 +1,6 @@
 $(document).ready(function() {
 
+    // Fetching the images from images.json and appending them to the .image-container
     $.getJSON('images.json', function(data) {
         data.images.forEach(function(image) {
             var imgElement = $('<img>').attr('src', 'images/' + image).attr('alt', image);
@@ -11,6 +12,7 @@ $(document).ready(function() {
         animateImages();
     });
 
+    // Function to generate random velocity for the images
     function getRandomVelocity() {
         return {
             dx: (Math.random() - 0.5) * 4,
@@ -18,12 +20,14 @@ $(document).ready(function() {
         };
     }
 
+    // Function to update the velocities of the images
     function updateVelocities() {
         $(".image-container img").each(function() {
             $(this).data('velocity', getRandomVelocity());
         });
     }
 
+    // Function to animate the images on the screen
     function animateImages() {
         $(".image-container img").each(function() {
             var $img = $(this);
@@ -50,5 +54,18 @@ $(document).ready(function() {
         });
 
         requestAnimationFrame(animateImages);  // Keep the animation running
+    }
+
+    // Event to open the modal when an image is clicked
+    $(document).on('click', '.image-container img', function() {
+        var src = $(this).attr('src');
+        $('#modalImage').attr('src', src);
+        $('#imageModal').show();
+    });
+
+    // Function to close the modal
+    $(document).on('click', '.modal-close', closeModal);
+    function closeModal() {
+        $('#imageModal').hide();
     }
 });
