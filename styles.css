@@ -12,5 +12,5 @@ body {
     position: absolute;
     width: 100px; 
     height: auto;
-    transition: transform 5s linear;  /* Ensure the animation is 5 seconds and linear */
+    transition: transform 10s linear;
 }
