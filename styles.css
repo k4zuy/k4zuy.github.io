@@ -10,7 +10,7 @@ body {
 
 .image-container img {
     position: absolute;
-    width: 100px;
+    width: 100px; 
     height: auto;
-    transition: transform 5s linear;  /* Updated this line */
+    transition: transform 5s linear;  /* Ensure the animation is 5 seconds and linear */
 }
