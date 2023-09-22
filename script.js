@@ -1,10 +1,12 @@
 $(document).ready(function() {
-    // Fetch the JSON data and populate the images
+
     $.getJSON('images.json', function(data) {
         data.images.forEach(function(image) {
             var imgElement = $('<img>').attr('src', 'images/' + image).attr('alt', image);
             $('.image-container').append(imgElement);
         });
+
+        setInterval(moveAllImages, 5000);  // New position every 5 seconds, matching the CSS transition
     });
 
     function randomPosition() {
@@ -17,19 +19,12 @@ $(document).ready(function() {
 
     function moveImage($img) {
         var newPos = randomPosition();
-        $img.css('top', newPos[0] + 'px');
-        $img.css('left', newPos[1] + 'px');
+        $img.css('transform', 'translate(' + newPos[1] + 'px, ' + newPos[0] + 'px)');
     }
 
-    setTimeout(function() {
+    function moveAllImages() {
         $(".image-container img").each(function() {
             moveImage($(this));
         });
-    }, 200);  // give some time for images to load before moving
-
-    setInterval(function() {
-        $(".image-container img").each(function() {
-            moveImage($(this));
-        });
-    }, 1000);  
+    }
 });
